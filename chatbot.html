@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Чат-бот Sirius Future</title>
+  <!-- Подключение внешнего CSS -->
+  <link rel="stylesheet" href="chatbot.css">
+</head>
+<body>
+  <!-- Кнопка для открытия чата -->
+  <button id="chatbot-toggle">Чат</button>
+
+  <!-- Окно чата -->
+  <div id="chatbot-container">
+    <!-- Кнопка выхода -->
+    <button id="exit-chat-btn">×</button>
+
+    <!-- Область для сообщений -->
+    <div id="chat-log"></div>
+
+    <!-- Обёртка для кнопок-сUGGESTIONS -->
+    <div id="suggestions-wrapper">
+      <button id="left-scroll-btn" class="scroll-btn">&lsaquo;</button>
+      <button id="right-scroll-btn" class="scroll-btn">&rsaquo;</button>
+      <div id="suggestions-panel"></div>
+    </div>
+
+    <!-- Нижняя панель ввода текста -->
+    <div id="chat-footer">
+      <input id="user-input" type="text" placeholder="Введите вопрос..." />
+      <button id="send-btn">&#10148;</button>
+    </div>
+  </div>
+
+  <!-- Асинхронное подключение скрипта виджета -->
+  <script defer src="chatbot.js"></script>
+</body>
+</html>
