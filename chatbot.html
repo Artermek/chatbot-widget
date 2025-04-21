@@ -46,6 +46,8 @@
       flex-direction: column;
       z-index: 9999;
       overflow: hidden;
+      border: none;
+      box-shadow: none;
       font-family: Arial, sans-serif;
     }
     #exit-chat-btn {
@@ -250,163 +252,151 @@
       <button id="send-btn">➤</button>
     </div>
   </div>
-
   <script>
-    const PARENT_ORIGIN = '*';  // Ваш хост может заменить '*' на точный origin
-
-    // UUID для пользователя
     function generateUUID() {
-      return 'xxxxxxxxyxxxxxyxxx'.replace(/[xy]/g, c => {
+      return 'xxxxxxxxyxxxxxyxxx'.replace(/[xy]/g, function(c) {
         const r = Math.random() * 16 | 0;
         return r.toString(16);
       });
     }
-    let userId = localStorage.getItem('chatbot_user_id');
+
+    // Используем localStorage вместо cookie
+    let userId = localStorage.getItem("user_id");
     if (!userId) {
       userId = generateUUID();
-      localStorage.setItem('chatbot_user_id', userId);
+      localStorage.setItem("user_id", userId);
     }
 
-    // История и флаг загрузки
+    const chatHistoryKey = "chatHistory_" + userId;
     let chatHistory = [];
-    let historyLoaded = false;
 
-    // Элементы
     const chatToggleButton = document.getElementById('chatbot-toggle');
-    const chatbotContainer  = document.getElementById('chatbot-container');
-    const chatLog           = document.getElementById('chat-log');
-    const userInput         = document.getElementById('user-input');
-    const sendBtn           = document.getElementById('send-btn');
-    const exitChatBtn       = document.getElementById('exit-chat-btn');
-    const leftScrollBtn     = document.getElementById('left-scroll-btn');
-    const rightScrollBtn    = document.getElementById('right-scroll-btn');
-    const suggestionsPanel  = document.getElementById('suggestions-panel');
+    const chatbotContainer = document.getElementById('chatbot-container');
+    const chatLog = document.getElementById('chat-log');
+    const userInput = document.getElementById('user-input');
+    const sendBtn = document.getElementById('send-btn');
+    const exitChatBtn = document.getElementById('exit-chat-btn');
+    const leftScrollBtn = document.getElementById('left-scroll-btn');
+    const rightScrollBtn = document.getElementById('right-scroll-btn');
+    const suggestionsPanel = document.getElementById('suggestions-panel');
 
-    // Вывод одного сообщения
     function displayMessage(role, text, suggestions = []) {
       if (role === 'user') {
         chatLog.innerHTML += `<div class="user-message">${text}</div>`;
-      } else {
+      } else if (role === 'bot') {
         chatLog.innerHTML += `
           <div class="bot-message">
-            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTdIIG48LGHqSQAQ2wXoOaYitN-bbaaV7COKQ&s"
-                 class="assistant-avatar" alt="Chat Assistant">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTdIIG48LGHqSQAQ2wXoOaYitN-bbaaV7COKQ&s" class="assistant-avatar" alt="Chat Assistant">
             <div class="bot-text">${text}</div>
-          </div>`;
-        suggestionsPanel.innerHTML = '';
-        suggestions.forEach(s => {
-          const btn = document.createElement('button');
-          btn.className = 'suggestion-button';
-          btn.textContent = s;
-          btn.onclick = () => sendMessageByText(s);
-          suggestionsPanel.appendChild(btn);
+          </div>
+        `;
+        suggestionsPanel.innerHTML = "";
+        if (suggestions.length) {
+          suggestions.forEach(suggestion => {
+            const button = document.createElement('button');
+            button.classList.add('suggestion-button');
+            button.textContent = suggestion;
+            button.addEventListener('click', () => {
+              sendMessageByText(suggestion);
+            });
+            suggestionsPanel.appendChild(button);
+          });
+        }
+      }
+      chatLog.scrollTop = chatLog.scrollHeight;
+    }
+
+    function appendMessage(role, text, suggestions = []) {
+      chatHistory.push({ role, content: text, suggestions });
+      saveChatHistory();
+      displayMessage(role, text, suggestions);
+    }
+
+    function saveChatHistory() {
+      localStorage.setItem(chatHistoryKey, JSON.stringify(chatHistory));
+    }
+
+    function loadChatHistory() {
+      const stored = localStorage.getItem(chatHistoryKey);
+      if (stored) {
+        try {
+          chatHistory = JSON.parse(stored);
+        } catch {
+          chatHistory = [];
+        }
+        chatHistory.forEach(msg => {
+          displayMessage(msg.role, msg.content, msg.suggestions || []);
         });
       }
       chatLog.scrollTop = chatLog.scrollHeight;
     }
 
-    // Добавление сообщения в историю + уведомление родителя
-    function appendMessage(role, text, suggestions = []) {
-      chatHistory.push({ role, content: text, suggestions });
-      displayMessage(role, text, suggestions);
-      window.parent.postMessage(
-        { type: 'SAVE_HISTORY', payload: chatHistory },
-        PARENT_ORIGIN
-      );
+    loadChatHistory();
+
+    if (!chatHistory.length) {
+      chatLog.innerHTML = `<div id="policy-header">
+        При отправке данных вы соглашаетесь с 
+        <a href="https://siriusfuture.ru/legal/politika" target="_blank">политикой обработки персональных данных</a>
+      </div>`;
+      const greetingButtons = [
+        "Запишите на вводное занятие",
+        "Расскажите о стоимости",
+        "У меня другой вопрос"
+      ];
+      appendMessage('bot', "Рады приветствовать вас в Sirius Future! Хотите что-то уточнить?", greetingButtons);
     }
 
-    // Отрисовать ранее загруженные сообщения
-    function renderHistory() {
-      chatHistory.forEach(msg =>
-        displayMessage(msg.role, msg.content, msg.suggestions || [])
-      );
-    }
-
-    // Приветствие по умолчанию
-    function initialGreeting() {
-      chatLog.innerHTML = `
-        <div id="policy-header">
-          При отправке данных вы соглашаетесь с 
-          <a href="https://siriusfuture.ru/legal/politika" target="_blank">
-            политикой обработки персональных данных
-          </a>
-        </div>`;
-      appendMessage('bot',
-        'Рады приветствовать вас в Sirius Future! Хотите что-то уточнить?',
-        ['Запишите на вводное занятие','Расскажите о стоимости','У меня другой вопрос']
-      );
-    }
-
-    // Приём истории от родителя
-    window.addEventListener('message', event => {
-      // При желании здесь можно проверять event.origin
-      const msg = event.data;
-      if (msg.type === 'LOAD_HISTORY' && Array.isArray(msg.payload)) {
-        chatHistory   = msg.payload;
-        historyLoaded = true;
-        renderHistory();
-      }
-    });
-
-    // Старт: запрос истории и fallback-приветствие
-    window.addEventListener('DOMContentLoaded', () => {
-      // Попросить родителя прислать историю
-      window.parent.postMessage({ type: 'REQUEST_HISTORY' }, PARENT_ORIGIN);
-
-      // Если через 100 мс не пришла ни одна LOAD_HISTORY — показываем стандартное приветствие
-      setTimeout(() => {
-        if (!historyLoaded) {
-          historyLoaded = true;
-          initialGreeting();
-        }
-      }, 100);
-    });
-
-    // Управление видимостью
-    chatToggleButton.onclick = () => {
+    chatToggleButton.addEventListener('click', () => {
       chatbotContainer.style.display =
         chatbotContainer.style.display === 'flex' ? 'none' : 'flex';
-    };
-    exitChatBtn.onclick = () => chatbotContainer.style.display = 'none';
-    leftScrollBtn.onclick = () => suggestionsPanel.scrollLeft -= 150;
-    rightScrollBtn.onclick = () => suggestionsPanel.scrollLeft += 150;
+    });
+    exitChatBtn.addEventListener('click', () => {
+      chatbotContainer.style.display = 'none';
+    });
+    leftScrollBtn.addEventListener('click', () => {
+      suggestionsPanel.scrollLeft -= 150;
+    });
+    rightScrollBtn.addEventListener('click', () => {
+      suggestionsPanel.scrollLeft += 150;
+    });
 
-    // Отправка запроса в AI
     async function sendMessageByText(text) {
       if (!text) return;
       appendMessage('user', text);
       userInput.value = '';
       try {
-        const res = await fetch(
-          'https://ai-sirius-test-3cca67054617.herokuapp.com/api/get_answer_async',
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ user_id: userId, text })
-          }
-        );
-        if (!res.ok) throw new Error(res.status);
-        const data = await res.json();
-        let suggestions = [];
+        const response = await fetch('https://ai-sirius-test-3cca67054617.herokuapp.com/api/get_answer_async', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ user_id: userId, text })
+        });
+        if (!response.ok) throw new Error('Ошибка сети: ' + response.status);
+        const data = await response.json();
+        let suggestionsArray = [];
         if (data.button_answer) {
-          suggestions = data.button_answer
+          suggestionsArray = data.button_answer
             .replace(/^\[|\]$/g, '')
             .split(',')
             .map(s => s.trim())
             .filter(s => s);
         }
-        appendMessage('bot', data.message, suggestions);
+        appendMessage('bot', data.message, suggestionsArray);
         if (data.show_form) displayTrialForm();
-      } catch (err) {
-        console.error(err);
-        appendMessage('bot', 'Ошибка сервера или сети');
+      } catch (error) {
+        console.error(error);
+        appendMessage('bot', "Ошибка сервера или сети");
       }
     }
 
-    sendBtn.onclick = () => sendMessageByText(userInput.value.trim());
-    userInput.onkeydown = e => { if (e.key === 'Enter') sendMessageByText(userInput.value.trim()); };
+    async function sendMessage() {
+      const text = userInput.value.trim();
+      if (text) await sendMessageByText(text);
+    }
+    sendBtn.addEventListener('click', sendMessage);
+    userInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter') sendMessage();
+    });
 
-    // Форма записи на пробный урок
     function displayTrialForm() {
       const formHtml = `
         <form id="trialForm" style="display:flex;flex-direction:column;gap:8px;margin-top:10px;">
@@ -419,39 +409,42 @@
           <label>Возраст ребёнка</label>
           <input type="number" name="childAge" placeholder="Возраст" required>
           <button type="submit">Далее</button>
-        </form>`;
-      appendMessage('bot',
-        `Отлично! Чтобы записаться на пробный урок, заполните форму ниже:\n${formHtml}`,
-        []
-      );
+        </form>
+      `;
+      chatLog.innerHTML += `
+        <div class="bot-message">
+          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTdIIG48LGHqSQAQ2wXoOaYitN-bbaaV7COKQ&s" class="assistant-avatar" alt="Chat Assistant">
+          <div class="bot-text">
+            <p>Отлично! Чтобы записаться на пробный урок, заполните форму ниже:</p>
+            ${formHtml}
+          </div>
+        </div>
+      `;
+      chatLog.scrollTop = chatLog.scrollHeight;
 
       const form = document.getElementById('trialForm');
-      form.onsubmit = async e => {
-        e.preventDefault();
+      form.addEventListener('submit', async event => {
+        event.preventDefault();
         const fd = new FormData(form);
-        const payload = {
-          user_id:    userId,
-          parentName: fd.get('parentName'),
-          phone:      fd.get('phone'),
-          childName:  fd.get('childName'),
-          childAge:   fd.get('childAge'),
-        };
         try {
-          const res = await fetch(
-            'https://ai-sirius-test-3cca67054617.herokuapp.com/trial-lesson',
-            {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(payload)
-            }
-          );
-          if (!res.ok) throw new Error(res.status);
+          const res = await fetch('https://ai-sirius-test-3cca67054617.herokuapp.com/trial-lesson', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              user_id: userId,
+              parentName: fd.get('parentName'),
+              phone: fd.get('phone'),
+              childName: fd.get('childName'),
+              childAge: fd.get('childAge')
+            })
+          });
+          if (!res.ok) throw new Error();
           appendMessage('bot', 'Спасибо! Ваша заявка принята, мы скоро свяжемся с вами.');
           form.remove();
         } catch {
-          appendMessage('bot', 'Ваша заявка получена, менеджер свяжется с вами в ближайшее время.');
+          appendMessage('bot', 'Ваша заявка получена, в ближайшее время с вами свяжется менеджер.\nЕсли у Вас остались вопросы, спрашивайте, постараюсь ответить!.');
         }
-      };
+      });
     }
   </script>
 </body>
