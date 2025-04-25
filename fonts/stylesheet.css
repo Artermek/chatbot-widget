@@ -1,0 +1,59 @@
+/* @font-face {
+  font-family: "Circe Rounded";
+  src: url("./CirceRounded-Light.otf") format("opentype");
+  font-weight: 300;
+  font-style: normal;
+} */
+
+@font-face {
+  font-family: "Circe Rounded";
+  src:
+    local("Circe Rounded Light"),
+    local("CirceRounded-Light"),
+    url("CirceRounded-Light.woff2") format("woff2"),
+    url("CirceRounded-Light.woff") format("woff"),
+    url("./CirceRounded-Light.otf") format("opentype"),
+    url("CirceRounded-Light.ttf") format("truetype");
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Circe Rounded";
+  src:
+    local("Circe Rounded Regular"),
+    local("CirceRounded-Regular"),
+    url("CirceRounded-Regular.woff2") format("woff2"),
+    url("CirceRounded-Regular.woff") format("woff"),
+    url("./CirceRounded-Regular.otf") format("opentype"),
+    url("CirceRounded-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Circe Rounded";
+  src:
+    local("Circe Rounded Bold"),
+    local("CirceRounded-Bold"),
+    url("CirceRounded-Bold.woff2") format("woff2"),
+    url("CirceRounded-Bold.woff") format("woff"),
+    url("./CirceRounded-Bold.otf") format("opentype"),
+    url("CirceRounded-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+}
+
+/* @font-face {
+  font-family: "Circe Rounded";
+  src: url("./CirceRounded-Regular.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Circe Rounded";
+  src: url("./CirceRounded-Bold.otf") format("opentype");
+  font-weight: bold;
+  font-style: normal;
+} */
