@@ -1,7 +1,13 @@
-import { initializeChat, appendMessage } from "./features/chat.js";
-import { setupEventListeners } from "./features/dom.js";
-import { getCookie, setCookie, generateUUID } from "./shared/utils.js";
-
+import {
+  initializeChat,
+  appendMessage,
+} from "https://cdn.jsdelivr.net/gh/Artermek/chatbot-widget/src/features/chat.js";
+import { setupEventListeners } from "https://cdn.jsdelivr.net/gh/Artermek/chatbot-widget/src/features/dom.js";
+import {
+  getCookie,
+  setCookie,
+  generateUUID,
+} from "https://cdn.jsdelivr.net/gh/Artermek/chatbot-widget/src/shared/utils.js";
 let userId = getCookie("user_id");
 if (!userId) {
   userId = generateUUID();
