@@ -14,9 +14,11 @@ export function setupEventListeners(userId) {
   chatToggleButton.addEventListener("click", () => {
     chatbotContainer.style.display =
       chatbotContainer.style.display === "flex" ? "none" : "flex";
+    chatToggleButton.style.display = "none";
   });
 
   exitChatBtn.addEventListener("click", () => {
+    chatToggleButton.style.display = "flex";
     chatbotContainer.style.display = "none";
   });
 

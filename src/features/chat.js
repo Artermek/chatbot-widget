@@ -9,7 +9,7 @@ import {
 import {
   sendMessage as sendByMessage,
   sendTrialRequest,
-} from "./../api/messageService.js";
+} from "../api/messageService.js";
 
 const chatbotContainer = document.getElementById(SELECTORS.CHATBOT_CONTAINER);
 const chatLog = document.getElementById(SELECTORS.CHAT_LOG);
