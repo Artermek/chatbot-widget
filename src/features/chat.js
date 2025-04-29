@@ -17,7 +17,7 @@ const suggestionsPanel = document.getElementById(SELECTORS.SUGGESTIONS_PANEL);
 const userInput = document.getElementById(SELECTORS.USER_INPUT);
 const leftScrollBtn = document.getElementById(SELECTORS.LEFT_SCROLL_BTN);
 const rightScrollBtn = document.getElementById(SELECTORS.RIGHT_SCROLL_BTN);
-
+const chatToggleButton = document.getElementById(SELECTORS.CHAT_TOGGLE_BUTTON);
 let chatHistory = [];
 
 export function initializeChat(userId) {
@@ -112,12 +112,9 @@ function loadChatHistory(chatHistoryKey) {
     });
 
     setTimeout(() => {
-      if (
-        chatbotContainer &&
-        chatbotContainer.style.display === "" &&
-        chatHistory.length
-      ) {
+      if (chatbotContainer && chatbotContainer.style.display === "") {
         chatbotContainer.style.display = "flex";
+        chatToggleButton.style.display = "none";
       }
     }, 12000);
   }
@@ -151,7 +148,6 @@ export async function sendMessageByText(text, userIds) {
     }
   } catch (error) {
     console.error("Ошибка при отправке сообщения:", error);
-    // Рекомендуется использовать Sentry: Sentry.captureException(error);
     appendMessage("bot", MESSAGES.ERROR_NETWORK);
   } finally {
     userInput.disabled = false;
