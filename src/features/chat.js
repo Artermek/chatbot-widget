@@ -115,6 +115,15 @@ function loadChatHistory(chatHistoryKey) {
       if (chatbotContainer && chatbotContainer.style.display === "") {
         chatbotContainer.style.display = "flex";
         chatToggleButton.style.display = "none";
+        try {
+          const audio = new Audio("/chatbot-widget/src/audio/open.mp3");
+          audio.volume = 0.2;
+          audio.play().catch((error) => {
+            console.error("Ошибка воспроизведения звука:", error);
+          });
+        } catch (error) {
+          console.error("Ошибка создания аудио:", error);
+        }
       }
     }, 12000);
   }
