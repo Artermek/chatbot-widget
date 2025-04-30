@@ -116,7 +116,9 @@ function loadChatHistory(chatHistoryKey) {
         chatbotContainer.style.display = "flex";
         chatToggleButton.style.display = "none";
         try {
-          const audio = new Audio("/chatbot-widget/src/audio/open.mp3");
+          const audio = new Audio(
+            "https://cdn.jsdelivr.net/gh/Artermek/chatbot-widget/src/audio/open.mp3"
+          );
           audio.volume = 0.2;
           audio.play().catch((error) => {
             console.error("Ошибка воспроизведения звука:", error);
