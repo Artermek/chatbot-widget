@@ -157,6 +157,11 @@ export async function sendMessageByText(text, userIds) {
       leftScrollBtn.style.display = "none";
       rightScrollBtn.style.display = "none";
     }
+    if (data.show_form === "False") {
+      displayTrialForm(userId);
+      leftScrollBtn.style.display = "block";
+      rightScrollBtn.style.display = "block";
+    }
   } catch (error) {
     console.error("Ошибка при отправке сообщения:", error);
     appendMessage("bot", MESSAGES.ERROR_NETWORK);
