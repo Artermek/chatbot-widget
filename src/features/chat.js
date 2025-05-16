@@ -158,7 +158,6 @@ export async function sendMessageByText(text, userIds) {
       rightScrollBtn.style.display = "none";
     }
     if (data.show_form === "False") {
-      displayTrialForm(userId);
       leftScrollBtn.style.display = "block";
       rightScrollBtn.style.display = "block";
     }
