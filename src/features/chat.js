@@ -186,7 +186,7 @@ export function displayTrialForm(userId) {
       </div>
       <div class="input-wrapper">
         <label class="form-label">Возраст ребёнка</label>
-        <input class="form-input" type="number" name="childAge" placeholder="Возраст" required min="1" max="18">
+        <input class="form-input" name="childAge" placeholder="Возраст" required min="1" max="18">
       </div>
       <button class="form-submit-btn" type="submit">Отправить заявку</button>
     </form>`;
@@ -207,10 +207,6 @@ export function displayTrialForm(userId) {
     const childName = formData.get("childName");
     const childAge = formData.get("childAge");
 
-    if (!isValidPhone(phone)) {
-      appendMessage("bot", "Пожалуйста, введите корректный номер телефона.");
-      return;
-    }
     if (childAge < 1 || childAge > 18) {
       appendMessage("bot", "Возраст ребёнка должен быть от 1 до 18 лет.");
       return;
