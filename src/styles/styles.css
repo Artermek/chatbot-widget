@@ -142,7 +142,7 @@ body {
   font-weight: 500;
   margin: 6px 0;
   float: left;
-  max-width: 90%;
+  width: 90%;
   word-wrap: break-word;
 }
 
@@ -233,7 +233,6 @@ body {
   padding: 8px;
   background: #ffffff;
   cursor: pointer;
-  font-weight: 600;
   font-family: "CirceRounded", "Arial", "sans-serif";
   font-size: 14px;
   white-space: nowrap;
@@ -305,7 +304,7 @@ body {
   padding: 15px;
   border-radius: 15px;
   border-bottom-left-radius: 0px;
-  width: 284px;
+  width: 100%;
 }
 
 .input-wrapper {

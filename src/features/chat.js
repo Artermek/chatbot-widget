@@ -193,7 +193,7 @@ export function displayTrialForm(userId) {
   const botFormHtml = `
     <div class="bot-message">
       <img src="${ASSISTANT_AVATAR_URL}" class="assistant-avatar" alt="Chat Assistant">
-      <div>${formHtml}</div>
+      ${formHtml}
     </div>`;
   chatLog.insertAdjacentHTML("beforeend", botFormHtml);
   chatLog.scrollTop = chatLog.scrollHeight;
