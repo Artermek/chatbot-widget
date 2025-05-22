@@ -21,6 +21,7 @@ const chatToggleButton = document.getElementById(SELECTORS.CHAT_TOGGLE_BUTTON);
 let chatHistory = [];
 
 export function initializeChat(userId) {
+  leftScrollBtn.style.display = "none";
   const chatHistoryKey = `chatHistory_${userId}`;
   if (!document.getElementById(SELECTORS.POLICY_HEADER)) {
     appendPolicyHeader();

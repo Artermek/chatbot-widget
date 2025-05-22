@@ -23,11 +23,28 @@ export function setupEventListeners(userId) {
   });
 
   leftScrollBtn.addEventListener("click", () => {
-    document.getElementById("suggestions-panel").scrollLeft -= 150;
+    rightScrollBtn.style.display = "block";
+    const panel = document.getElementById("suggestions-panel");
+
+    panel.scrollLeft -= 150;
+    if (panel.scrollLeft - 150 <= 0) {
+      panel.scrollLeft = 0;
+      leftScrollBtn.style.display = "none";
+    }
   });
 
   rightScrollBtn.addEventListener("click", () => {
-    document.getElementById("suggestions-panel").scrollLeft += 150;
+    leftScrollBtn.style.display = "block";
+    const panel = document.getElementById("suggestions-panel");
+    const currScroll = panel.scrollLeft;
+    const maxScroll = panel.scrollWidth - panel.clientWidth;
+
+    if (currScroll + 150 >= maxScroll) {
+      panel.scrollLeft = maxScroll;
+      rightScrollBtn.style.display = "none";
+    } else {
+      panel.scrollLeft += 150;
+    }
   });
 
   sendBtn.addEventListener("click", () =>
