@@ -192,7 +192,7 @@ export function displayTrialForm(userId) {
       <button class="form-submit-btn" type="submit">Отправить заявку</button>
     </form>`;
   const botFormHtml = `
-    <div class="bot-message">
+    <div id="bot-message-form" class="bot-message">
       <img src="${ASSISTANT_AVATAR_URL}" class="assistant-avatar" alt="Chat Assistant">
       ${formHtml}
     </div>`;
@@ -200,6 +200,8 @@ export function displayTrialForm(userId) {
   chatLog.scrollTop = chatLog.scrollHeight;
 
   const formElement = document.getElementById(SELECTORS.TRIAL_FORM);
+  const botMessageForm = document.getElementById("bot-message-form");
+
   formElement.addEventListener("submit", async (event) => {
     event.preventDefault();
     const formData = new FormData(formElement);
@@ -223,6 +225,7 @@ export function displayTrialForm(userId) {
       });
       appendMessage("bot", MESSAGES.SUCCESS_FORM);
       formElement.remove();
+      botMessageForm.remove();
     } catch (error) {
       console.error("Ошибка при отправке формы:", error);
       appendMessage("bot", MESSAGES.FALLBACK_FORM);
