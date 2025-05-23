@@ -19,15 +19,42 @@ const leftScrollBtn = document.getElementById(SELECTORS.LEFT_SCROLL_BTN);
 const rightScrollBtn = document.getElementById(SELECTORS.RIGHT_SCROLL_BTN);
 const chatToggleButton = document.getElementById(SELECTORS.CHAT_TOGGLE_BUTTON);
 let chatHistory = [];
+let userIds = null;
 
 export function initializeChat(userId) {
   leftScrollBtn.style.display = "none";
   const chatHistoryKey = `chatHistory_${userId}`;
+  userIds = userId;
   if (!document.getElementById(SELECTORS.POLICY_HEADER)) {
     appendPolicyHeader();
   }
+
   loadChatHistory(chatHistoryKey);
 }
+
+const observer = new MutationObserver((mutations) => {
+  mutations.forEach((mutation) => {
+    if (
+      mutation.attributeName === "style" ||
+      mutation.attributeName === "class"
+    ) {
+      const isOpen = chatbotContainer.style.display !== "none";
+      if (isOpen) {
+        chatLog.scrollTo({
+          top: chatLog.scrollHeight,
+          behavior: "smooth",
+        });
+        if (userIds && localStorage.getItem("show_form") === "true") {
+          displayTrialForm(userIds);
+        }
+      }
+    }
+  });
+});
+
+observer.observe(chatbotContainer, {
+  attributes: true,
+});
 
 function appendPolicyHeader() {
   const policyHtml = `
@@ -69,7 +96,6 @@ export function displayMessage(role, text, suggestions = []) {
     }
   }
   chatLog.appendChild(fragment);
-  chatLog.scrollTop = chatLog.scrollHeight;
 }
 
 function appendLogic(role, text, suggestions = []) {
@@ -162,6 +188,10 @@ export async function sendMessageByText(text, userIds) {
       leftScrollBtn.style.display = "block";
       rightScrollBtn.style.display = "block";
     }
+    localStorage.setItem(
+      "show_form",
+      data.show_form === "False" ? false : true
+    );
   } catch (error) {
     console.error("Ошибка при отправке сообщения:", error);
     appendMessage("bot", MESSAGES.ERROR_NETWORK);
@@ -216,14 +246,15 @@ export function displayTrialForm(userId) {
     }
 
     try {
-      await sendTrialRequest({
+      const response = await sendTrialRequest({
         userId,
         parentName,
         phone,
         childName,
         childAge,
       });
-      appendMessage("bot", MESSAGES.SUCCESS_FORM);
+      appendMessage("bot", response.message1);
+      appendMessage("bot", response.message);
       formElement.remove();
       botMessageForm.remove();
     } catch (error) {

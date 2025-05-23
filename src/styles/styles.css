@@ -362,6 +362,12 @@ body {
 .form-submit-btn:hover {
   background-color: #3367d6;
 }
+@media only screen and (min-width: 641px) and (max-width: 1024px) {
+  #chatbot-container {
+    bottom: 20px;
+  }
+}
+
 @media only screen and (max-width: 640px) {
   #chatbot-container {
     position: fixed;
