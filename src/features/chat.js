@@ -201,8 +201,13 @@ export async function sendMessageByText(text, userIds) {
 }
 
 export function displayTrialForm(userId) {
+  const existingForm = document.getElementById(SELECTORS.TRIAL_FORM);
+  const existingBotMessageForm = document.getElementById("bot-message-form");
+  if (existingForm) existingForm.remove();
+  if (existingBotMessageForm) existingBotMessageForm.remove();
+
   const formHtml = `
-    <form id="${SELECTORS.TRIAL_FORM}" class="trial-form">
+    <div id="${SELECTORS.TRIAL_FORM}" class="trial-form">
       <div class="input-wrapper">
         <label class="form-label">Ваше имя</label>
         <input class="form-input" type="text" name="parentName" placeholder="Ваше имя" required>
@@ -219,8 +224,8 @@ export function displayTrialForm(userId) {
         <label class="form-label">Возраст ребёнка</label>
         <input class="form-input" name="childAge" placeholder="Возраст" required min="1" max="18">
       </div>
-      <button class="form-submit-btn" type="submit">Отправить заявку</button>
-    </form>`;
+      <button class="form-submit-btn" type="button">Отправить заявку</button>
+    </div>`;
   const botFormHtml = `
     <div id="bot-message-form" class="bot-message">
       <img src="${ASSISTANT_AVATAR_URL}" class="assistant-avatar" alt="Chat Assistant">
@@ -231,35 +236,54 @@ export function displayTrialForm(userId) {
 
   const formElement = document.getElementById(SELECTORS.TRIAL_FORM);
   const botMessageForm = document.getElementById("bot-message-form");
-
-  formElement.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    const formData = new FormData(formElement);
-    const parentName = formData.get("parentName");
-    const phone = formData.get("phone");
-    const childName = formData.get("childName");
-    const childAge = formData.get("childAge");
-
-    if (childAge < 1 || childAge > 18) {
-      appendMessage("bot", "Возраст ребёнка должен быть от 1 до 18 лет.");
-      return;
-    }
-
+  const submitButton = formElement.querySelector(".form-submit-btn");
+  submitButton.addEventListener("click", async () => {
+    console.log("Кнопка отправки нажата");
     try {
-      const response = await sendTrialRequest({
-        userId,
+      const parentName = formElement.querySelector(
+        'input[name="parentName"]'
+      ).value;
+      const phone = formElement.querySelector('input[name="phone"]').value;
+      const childName = formElement.querySelector(
+        'input[name="childName"]'
+      ).value;
+      const childAge = formElement.querySelector(
+        'input[name="childAge"]'
+      ).value;
+
+      console.log("Данные формы:", {
         parentName,
         phone,
         childName,
         childAge,
+        userId,
       });
-      appendMessage("bot", response.message1);
-      appendMessage("bot", response.message);
-      formElement.remove();
-      botMessageForm.remove();
+
+      if (childAge < 1 || childAge > 18) {
+        appendMessage("bot", "Возраст ребёнка должен быть от 1 до 18 лет.");
+        return;
+      }
+
+      try {
+        const response = await sendTrialRequest({
+          userId,
+          parentName,
+          phone,
+          childName,
+          childAge,
+        });
+        console.log("Ответ от sendTrialRequest:", response);
+        appendMessage("bot", response.message1 || "Заявка успешно отправлена");
+        appendMessage("bot", response.message || "Спасибо за ваш запрос!");
+        if (formElement) formElement.remove();
+        if (botMessageForm) botMessageForm.remove();
+      } catch (error) {
+        console.error("Ошибка при отправке формы:", error);
+        appendMessage("bot", MESSAGES.FALLBACK_FORM);
+      }
     } catch (error) {
-      console.error("Ошибка при отправке формы:", error);
-      appendMessage("bot", MESSAGES.FALLBACK_FORM);
+      console.error("Общая ошибка при обработке формы:", error);
+      appendMessage("bot", "Произошла ошибка при обработке формы.");
     }
   });
 }
