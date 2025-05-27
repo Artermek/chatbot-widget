@@ -192,6 +192,10 @@ export async function sendMessageByText(text, userIds) {
       "show_form",
       data.show_form === "False" ? false : true
     );
+    chatLog.scrollTo({
+      top: chatLog.scrollHeight,
+      behavior: "smooth",
+    });
   } catch (error) {
     console.error("Ошибка при отправке сообщения:", error);
     appendMessage("bot", MESSAGES.ERROR_NETWORK);
@@ -251,14 +255,6 @@ export function displayTrialForm(userId) {
         'input[name="childAge"]'
       ).value;
 
-      console.log("Данные формы:", {
-        parentName,
-        phone,
-        childName,
-        childAge,
-        userId,
-      });
-
       if (childAge < 1 || childAge > 18) {
         appendMessage("bot", "Возраст ребёнка должен быть от 1 до 18 лет.");
         return;
@@ -272,7 +268,6 @@ export function displayTrialForm(userId) {
           childName,
           childAge,
         });
-        console.log("Ответ от sendTrialRequest:", response);
         appendMessage("bot", response.message1 || "Заявка успешно отправлена");
         appendMessage("bot", response.message || "Спасибо за ваш запрос!");
         if (formElement) formElement.remove();
