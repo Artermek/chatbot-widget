@@ -162,10 +162,13 @@ function loadChatHistory(chatHistoryKey) {
 export async function sendMessageByText(text, userIds) {
   let userId = userIds ?? getCookie("user_id");
   if (!text || !userId) return;
-
   appendMessage("user", text);
-  userInput.value = "";
 
+  userInput.value = "";
+  chatLog.scrollTo({
+    top: chatLog.scrollHeight,
+    behavior: "smooth",
+  });
   userInput.disabled = true;
   try {
     const data = await sendByMessage({ userId, text });
