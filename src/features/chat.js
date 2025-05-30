@@ -245,7 +245,6 @@ export function displayTrialForm(userId) {
   const botMessageForm = document.getElementById("bot-message-form");
   const submitButton = formElement.querySelector(".form-submit-btn");
   submitButton.addEventListener("click", async () => {
-    console.log("Кнопка отправки нажата");
     try {
       const parentName = formElement.querySelector(
         'input[name="parentName"]'
@@ -271,6 +270,7 @@ export function displayTrialForm(userId) {
           childName,
           childAge,
         });
+        localStorage.setItem("show_form", response.show_form);
         appendMessage("bot", response.message1 || "Заявка успешно отправлена");
         appendMessage("bot", response.message || "Спасибо за ваш запрос!");
         if (formElement) formElement.remove();
