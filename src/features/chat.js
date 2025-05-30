@@ -270,7 +270,10 @@ export function displayTrialForm(userId) {
           childName,
           childAge,
         });
-        localStorage.setItem("show_form", response.show_form);
+        localStorage.setItem(
+          "show_form",
+          response.show_form === "False" ? false : true
+        );
         appendMessage("bot", response.message1 || "Заявка успешно отправлена");
         appendMessage("bot", response.message || "Спасибо за ваш запрос!");
         if (formElement) formElement.remove();
