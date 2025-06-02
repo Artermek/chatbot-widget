@@ -195,10 +195,6 @@ export async function sendMessageByText(text, userIds) {
       "show_form",
       data.show_form === "False" ? false : true
     );
-    chatLog.scrollTo({
-      top: chatLog.scrollHeight,
-      behavior: "smooth",
-    });
   } catch (error) {
     console.error("Ошибка при отправке сообщения:", error);
     appendMessage("bot", MESSAGES.ERROR_NETWORK);
