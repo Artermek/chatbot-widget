@@ -160,6 +160,7 @@ function loadChatHistory(chatHistoryKey) {
 }
 
 export async function sendMessageByText(text, userIds) {
+  const botMessages = document.getElementsByClassName("bot-message");
   let userId = userIds ?? getCookie("user_id");
   if (!text || !userId) return;
   appendMessage("user", text);
@@ -182,6 +183,12 @@ export async function sendMessageByText(text, userIds) {
         .filter((item) => item);
     }
     appendMessage("bot", data.message, suggestionsArray);
+    chatLog.scrollTo({
+      top:
+        chatLog.scrollTop +
+        botMessages[botMessages.length - 1].clientHeight / 2,
+    });
+
     if (data.show_form === true) {
       displayTrialForm(userId);
       leftScrollBtn.style.display = "none";
@@ -191,10 +198,14 @@ export async function sendMessageByText(text, userIds) {
       leftScrollBtn.style.display = "block";
       rightScrollBtn.style.display = "block";
     }
+
     localStorage.setItem(
       "show_form",
       data.show_form === "False" ? false : true
     );
+
+    // chatLog.scrollHeight -
+    // botMessages[botMessages.length - 1].clientHeight / 2,
   } catch (error) {
     console.error("Ошибка при отправке сообщения:", error);
     appendMessage("bot", MESSAGES.ERROR_NETWORK);
