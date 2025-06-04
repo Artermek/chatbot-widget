@@ -44,9 +44,6 @@ const observer = new MutationObserver((mutations) => {
           top: chatLog.scrollHeight,
           behavior: "smooth",
         });
-        if (userIds && localStorage.getItem("show_form") === "true") {
-          displayTrialForm(userIds);
-        }
       }
     }
   });
@@ -144,7 +141,7 @@ function loadChatHistory(chatHistoryKey) {
         chatToggleButton.style.display = "none";
         try {
           const audio = new Audio(
-            "https://cdn.jsdelivr.net/gh/Artermek/chatbot-widget/src/audio/open.mp3"
+            "https://cdn.jsdelivr.net/gh/Artermek/c1hatbot-widget/src/audio/open.mp3"
           );
           audio.volume = 0.2;
           audio.play().catch((error) => {

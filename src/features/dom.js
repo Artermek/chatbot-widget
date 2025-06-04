@@ -23,14 +23,7 @@ export function setupEventListeners(userId) {
   });
 
   leftScrollBtn.addEventListener("click", () => {
-    rightScrollBtn.style.display = "block";
-    const panel = document.getElementById("suggestions-panel");
-
     panel.scrollLeft -= 150;
-    if (panel.scrollLeft - 150 <= 0) {
-      panel.scrollLeft = 0;
-      leftScrollBtn.style.display = "none";
-    }
   });
 
   rightScrollBtn.addEventListener("click", () => {
