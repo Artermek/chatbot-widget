@@ -198,14 +198,6 @@ export async function sendMessageByText(text, userIds) {
       leftScrollBtn.style.display = "block";
       rightScrollBtn.style.display = "block";
     }
-
-    localStorage.setItem(
-      "show_form",
-      data.show_form === "False" ? false : true
-    );
-
-    // chatLog.scrollHeight -
-    // botMessages[botMessages.length - 1].clientHeight / 2,
   } catch (error) {
     console.error("Ошибка при отправке сообщения:", error);
     appendMessage("bot", MESSAGES.ERROR_NETWORK);
@@ -236,7 +228,7 @@ export function displayTrialForm(userId) {
       </div>
       <div class="input-wrapper">
         <label class="form-label">Возраст ребёнка</label>
-        <input class="form-input" name="childAge" placeholder="Возраст" required min="1" max="18">
+        <input name="childAge" placeholder="Возраст" required min="1" max="18">
       </div>
       <button class="form-submit-btn" type="button">Отправить заявку</button>
     </div>`;
@@ -270,7 +262,7 @@ export function displayTrialForm(userId) {
       }
 
       try {
-        const response = await sendTrialRequest({
+        const response = sendTrialRequest({
           userId,
           parentName,
           phone,
